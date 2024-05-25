@@ -1,16 +1,16 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Room {
-  @PrimaryGeneratedColumn()
+export class Rooms {
+  @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
-  @Column()
+  @Column({ name: 'name' })
   name: string;
 
-  @Column()
+  @Column({ name: 'capacity' })
   capacity: number;
 
-  @Column()
+  @Column({ name: 'userId' })
   userId: number;
 }

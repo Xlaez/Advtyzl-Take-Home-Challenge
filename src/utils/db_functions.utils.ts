@@ -2,7 +2,7 @@ import { SelectQueryBuilder } from 'typeorm';
 import { Filter, Filters, Sort } from './types';
 
 export class DbFuncs {
-  pagination(query: SelectQueryBuilder<any>, page: number, limit: number) {
+  paginate(query: SelectQueryBuilder<any>, page: number, limit: number) {
     const offset = page * limit;
     return query.skip(offset).take(limit);
   }

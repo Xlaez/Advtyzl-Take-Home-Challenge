@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { RoomService } from './rooms.service';
 import { InsertRoomsDto, Sort } from './room.dto';
-import { Room } from './rooms.entity';
+import { Rooms } from './rooms.entity';
 
 @Controller('rooms')
 export class RoomsController {
@@ -18,7 +18,7 @@ export class RoomsController {
   }
 
   @Post()
-  async insertRooms(@Body() dto: InsertRoomsDto): Promise<Room[]> {
+  async insertRooms(@Body() dto: InsertRoomsDto): Promise<Rooms[]> {
     return this.roomService.insertRooms(dto);
   }
 }

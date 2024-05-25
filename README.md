@@ -1,73 +1,85 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Pagination, Filtering, and Sorting Utility Module For Advtyzl-Take-Home-Challenge
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Overview
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+The codebase implements and offers utility class methods / functions for applying pagination, filtering, and sorting to TypeORM query builders in a Nest.js application.
 
-## Description
+## Class
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+The **DbFuncs** class offers these pagination, filtering, and sorting functions as class methods.
 
-## Installation
+### paginate(query: SelectQueryBuilder<any>, page, limit)
+This method applies pagination to the query builder.
+*Note* page starts from `0` **i.e** to retrieve page 1 you would pass `0` as value
 
-```bash
-$ yarn install
-```
+**Parameters:**
+- `query`: The TypeORM query builder instance.
+- `page`: The current page number (starting from 0).
+- `limit`: The limit of items to return for a page.
 
-## Running the app
+### sort(query: SelectQueryBuilder<any>, sort: Sort[])
+This method applies sorting to the query builder.
 
-```bash
-# development
-$ yarn run start
+**Parameters:**
+- `query`: The TypeORM query builder instance.
+- `sort`: An array of type `SORT`, **SORT** is an object that accepts the fields:  `field` and `order` (`ASC` or `DESC`).
 
-# watch mode
-$ yarn run start:dev
+### filter(query: SelectQueryBuilder<any>, filters: any[])
+This  method applies filtering to the query builder.
 
-# production mode
-$ yarn run start:prod
-```
+**Parameters:**
+- `query`: The TypeORM query builder instance.
+- `filters`: An array of filter objects, each object contains a `field`, `value`, and `operator`.
 
-## Test
+**Supported Operators:**
+- `equals`
+- `not`
+- `gt` (greater than)
+- `gte` (greater than or equal)
+- `lt` (less than)
+- `lte` (less than or equal)
+- `like`
+- `in`
+- `notIn`
+- `isNull`
+- `isNotNull`
 
-```bash
-# unit tests
-$ yarn run test
+## Usage
 
-# e2e tests
-$ yarn run test:e2e
+1. Import and instantiate the utility class `DbFuncs` in your service class.
+2. Call the class-methods with appropriate parameters to get desired results as seen below:
 
-# test coverage
-$ yarn run test:cov
-```
+```typescript
+import { DbFuncs } from 'src/utils/db_functions.utils';
 
-## Support
+export class RoomService {
+  private dbFunctions: DbFuncs;
+  
+  constructor(@InjectRepository(Rooms) private roomRepo: Repository<Rooms>) {
+    this.dbFunctions = new DbFuncs();
+  }
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+  async queryRooms(dto: QueryRoomsDto) {
+    let queryBuilder = this.roomRepo.createQueryBuilder(Rooms.name);
 
-## Stay in touch
+    const sort = JSON.parse(dto.sort as any) as any[];
+    const filters = JSON.parse(dto.filters as any) as any[];
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+    if (filters.length) {
+      queryBuilder = this.dbFunctions.filter(queryBuilder, filters);
+    }
 
-## License
+    if (sort.length) {
+      queryBuilder = this.dbFunctions.sort(queryBuilder, sort);
+    }
 
-Nest is [MIT licensed](LICENSE).
+    queryBuilder = this.dbFunctions.paginate(queryBuilder, dto.page, dto.limit);
+
+    return queryBuilder.getMany();
+  }
+}
+
+
+### Deployment
+
+- Deploy on any hosting service provider of your choice.

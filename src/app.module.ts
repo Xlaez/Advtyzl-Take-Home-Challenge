@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Environment } from './configs';
 import { RoomsModule } from './rooms/rooms.module';
-import { Room } from './rooms/rooms.entity';
+import { Rooms } from './rooms/rooms.entity';
 
 @Module({
   imports: [
@@ -15,7 +15,7 @@ import { Room } from './rooms/rooms.entity';
       username: 'user',
       password: 'password123',
       database: 'litpad',
-      entities: [Room],
+      entities: [Rooms],
       synchronize: new Environment().dev(),
       retryAttempts: 6,
     }),

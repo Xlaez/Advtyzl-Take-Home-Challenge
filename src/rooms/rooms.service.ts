@@ -1,34 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Room } from './rooms.entity';
+import { Rooms } from './rooms.entity';
 import { InsertRoomsDto, QueryRoomsDto } from './room.dto';
 import { DbFuncs } from 'src/utils/db_functions.utils';
 
 @Injectable()
 export class RoomService {
   private dbFunctions: DbFuncs;
+  private readonly logger = new Logger(RoomService.name);
 
-  constructor(@InjectRepository(Room) private roomRepo: Repository<Room>) {
+  constructor(@InjectRepository(Rooms) private roomRepo: Repository<Rooms>) {
     this.dbFunctions = new DbFuncs();
   }
 
   async queryRooms(dto: QueryRoomsDto) {
-    let queryBuilder = this.roomRepo.createQueryBuilder(Room.name);
+    let queryBuilder = this.roomRepo.createQueryBuilder(Rooms.name);
 
-    if (dto.filters[0].field) {
-      queryBuilder = this.dbFunctions.filter(queryBuilder, dto.filters);
+    const sort = JSON.parse(dto.sort as any) as any[];
+    const filters = JSON.parse(dto.filters as any) as any[];
+
+    if (filters.length) {
+      queryBuilder = this.dbFunctions.filter(queryBuilder, filters);
     }
 
-    if (dto.sort[0].field) {
-      queryBuilder = this.dbFunctions.sort(queryBuilder, dto.sort);
+    if (sort.length) {
+      queryBuilder = this.dbFunctions.sort(queryBuilder, sort);
     }
 
-    queryBuilder = this.dbFunctions.pagination(
-      queryBuilder,
-      dto.page,
-      dto.limit,
-    );
+    queryBuilder = this.dbFunctions.paginate(queryBuilder, dto.page, dto.limit);
 
     return queryBuilder.getMany();
   }
