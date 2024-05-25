@@ -6,7 +6,7 @@ The codebase implements and offers utility class methods / functions for applyin
 
 ## Class
 
-The **DbFuncs** class offers these pagination, filtering, and sorting functions as class methods.
+The **DbFuncs** class offers these: pagination, filtering, and sorting functions as class methods.
 
 ### paginate(query: SelectQueryBuilder<any>, page, limit)
 This method applies pagination to the query builder.
@@ -78,8 +78,8 @@ export class RoomService {
     return queryBuilder.getMany();
   }
 }
+```
 
-
-### Deployment
+## Deployment
 
 - Deploy on any hosting service provider of your choice.
