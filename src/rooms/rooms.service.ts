@@ -17,8 +17,9 @@ export class RoomService {
   async queryRooms(dto: QueryRoomsDto) {
     let queryBuilder = this.roomRepo.createQueryBuilder(Rooms.name);
 
-    const sort = JSON.parse(dto.sort as any) as any[];
-    const filters = JSON.parse(dto.filters as any) as any[];
+    const sort = typeof dto.sort === 'string' ? JSON.parse(dto.sort) : dto.sort;
+    const filters =
+      typeof dto.filters === 'string' ? JSON.parse(dto.filters) : dto.filters;
 
     if (filters.length) {
       queryBuilder = this.dbFunctions.filter(queryBuilder, filters);

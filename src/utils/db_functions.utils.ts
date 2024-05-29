@@ -9,57 +9,59 @@ export class DbFuncs {
 
   filter(query: SelectQueryBuilder<any>, filters: Filters) {
     filters.forEach((filter: Filter) => {
+      const field = `"${filter.field}"`;
+
       switch (filter.operator) {
         case 'equals':
-          query.andWhere(`${filter.field} = :value`, {
+          query.andWhere(`${field} = :value`, {
             value: filter.value,
           });
           break;
         case 'not':
-          query.andWhere(`${filter.field} != :value`, {
+          query.andWhere(`${field} != :value`, {
             value: filter.value,
           });
           break;
         case 'gt':
-          query.andWhere(`${filter.field} > :value`, {
+          query.andWhere(`${field} > :value`, {
             value: filter.value,
           });
           break;
         case 'gte':
-          query.andWhere(`${filter.field} >= :value`, {
+          query.andWhere(`${field} >= :value`, {
             value: filter.value,
           });
           break;
         case 'lt':
-          query.andWhere(`${filter.field} < :value`, {
+          query.andWhere(`${field} < :value`, {
             value: filter.value,
           });
           break;
         case 'lte':
-          query.andWhere(`${filter.field} <= :value`, {
+          query.andWhere(`${field} <= :value`, {
             value: filter.value,
           });
           break;
         case 'like':
-          query.andWhere(`${filter.field} LIKE :value`, {
+          query.andWhere(`${field} LIKE :value`, {
             value: `%${filter.value}%`,
           });
           break;
         case 'in':
-          query.andWhere(`${filter.field} IN (:...values)`, {
+          query.andWhere(`${field} IN (:...values)`, {
             values: filter.value,
           });
           break;
         case 'notIn':
-          query.andWhere(`${filter.field} NOT IN (:...values)`, {
+          query.andWhere(`${field} NOT IN (:...values)`, {
             values: filter.value,
           });
           break;
         case 'isNull':
-          query.andWhere(`${filter.field} IS NULL`);
+          query.andWhere(`${field} IS NULL`);
           break;
         case 'isNotNull':
-          query.andWhere(`${filter.field} IS NOT NULL`);
+          query.andWhere(`${field} IS NOT NULL`);
           break;
         default:
           throw new Error(`Unknown filter operator: ${filter.operator}`);
@@ -70,7 +72,8 @@ export class DbFuncs {
 
   sort(query: SelectQueryBuilder<any>, sort: Sort[]) {
     sort.forEach((el: Sort) => {
-      query.orderBy(el.field, el.order);
+      const field = `"${el.field}"`;
+      query.orderBy(field, el.order);
     });
 
     return query;
