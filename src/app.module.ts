@@ -6,15 +6,17 @@ import { Environment } from './configs';
 import { RoomsModule } from './rooms/rooms.module';
 import { Rooms } from './rooms/rooms.entity';
 
+const env = new Environment();
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: env.prod() ? env.dbHostName : 'localhost',
       port: 5432,
-      username: 'user',
-      password: 'password123',
-      database: 'litpad',
+      username: env.prod() ? env.dbUserName : 'user',
+      password: env.prod() ? env.dbPassword : 'password123',
+      database: env.prod() ? env.dbName : 'litpad',
       entities: [Rooms],
       synchronize: new Environment().dev(),
       retryAttempts: 6,
