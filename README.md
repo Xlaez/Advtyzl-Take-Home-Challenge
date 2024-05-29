@@ -80,6 +80,18 @@ export class RoomService {
 }
 ```
 
+## Running Server Locally
+
+```bash
+yarn start:dev
+```
+
+## Running Test Cases
+
+```bash
+yarn test
+```
+
 ## Deployment
 
 - Deploy on any hosting service provider of your choice.
